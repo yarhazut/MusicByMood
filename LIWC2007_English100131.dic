@@ -91,8 +91,8 @@ accura*	131	136
 ace	355
 ache*	125	127	130	146	148
 achiev*	354	355
-aching	125	127 130	146	148
-acid*   140
+aching	125	127	130	146	148
+acid*	140
 acknowledg*	131	132
 acne	146	148
 acquainta*	121	123
@@ -2192,7 +2192,7 @@ kids*	121	124
 kill*	125	127	129	360
 kilometer*	252	250
 kin	121	122
-kind	<of>131/125	<of>135/126
+kind	131	125	135	126
 kinda	131	135
 kinderg*	354
 kindly	125	126
@@ -2284,8 +2284,8 @@ lied	11	13	125	127	129
 lies	125	127	129
 life	146	148
 light	140
-like	(02 134)125/464	(02 134)126	253
-likeab*	125	126
+like	02	134	125	464	02	134	126	253
+likeab*	125 126
 liked	11	13	125	126
 likel*	131	135
 likes	125	126

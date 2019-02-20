@@ -29,9 +29,9 @@ def get_tags_Array(tags):
 songToArtist = dict()
 def getNamesOfArtistAndSong():
     data_folder = Path("C:\songs_artists")
-    file_to_open = data_folder / "songs_artists_withTag.txt"
+    file_to_open = data_folder / "songs_artists_withTag_new.txt"
     data="";
-    with open('songs_artists_TopArtist.txt', encoding="utf8") as myfile:
+    with open('songs_artists_new.txt', encoding="utf8") as myfile:
         data = myfile.read()
         totalIndex=0;
         splited=data.split("|")
@@ -47,7 +47,7 @@ def getNamesOfArtistAndSong():
                 if (len(arr)>0):
                     indexSongs = indexSongs+1
                     totalIndex = totalIndex+1;
-                    print(indexSongs)
+                    print(indexSongs,totalIndex)
                     with open(file_to_open, 'a', encoding='utf-8') as file:
                         file.write(splited2[0] + '$' + splited2[1] + '|')
             except Exception:
@@ -60,5 +60,5 @@ dat=getNamesOfArtistAndSong();
 print(len(dict_tag))
 exDict = {'dict_tag': dict_tag}
 
-with open('file.txt', 'w') as file:
+with open('fileDictNew.txt', 'w') as file:
      file.write(json.dumps(exDict))

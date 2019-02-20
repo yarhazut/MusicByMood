@@ -1,7 +1,7 @@
 from LIWC import liwcAlgorithm
 
 def read_txt(file_name):
-    with open(file_name, "r") as myfile:
+    with open(file_name, "r",encoding="utf8") as myfile:
         data = myfile.readlines()
         return ','.join(data)
 
