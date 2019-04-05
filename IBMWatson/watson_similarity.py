@@ -6,7 +6,7 @@ import json
 
 
 def dict_to_arr(dict):
-    song_vec=[0]*5
+    song_vec = [0]*5
     song_vec[0] = dict['sadness']
     song_vec[1] = dict['joy']
     song_vec[2] = dict['fear']
@@ -15,8 +15,8 @@ def dict_to_arr(dict):
     return song_vec
 
 
-def get_most_similar_song(text_categories_arr):
-    text_categories_arr=dict_to_arr(text_categories_arr)
+def get_most_similar_song(text_categories_arr, played_songs_dict):
+    text_categories_arr = dict_to_arr(text_categories_arr)
     max_rate = 0
     max_song = ''
     max_artist = ''
@@ -29,8 +29,11 @@ def get_most_similar_song(text_categories_arr):
             json_obj = json.loads(json_obj)
             song_name = json_obj['songName']
             song_artist = json_obj['artist']
+            # played_songs_dict form is: <song name,set(artists who played that sing)>
+            if song_name in played_songs_dict and song_artist in played_songs_dict[song_name]:
+                continue
             song_categories_arr = dict_to_arr(json_obj)
-            rate = get_rate(song_categories_arr, text_categories_arr)
+            rate = get_ibm_watson_rate(song_categories_arr, text_categories_arr)
             if rate > max_rate:
                 max_rate = rate
                 max_song = song_name
@@ -39,7 +42,7 @@ def get_most_similar_song(text_categories_arr):
     return max_song, max_artist
 
 
-def get_rate(song_categories_arr,text_categories_arr):
+def get_ibm_watson_rate(song_categories_arr, text_categories_arr):
 
     song_vec = np.array(song_categories_arr)
     txt_vec = np.array(text_categories_arr)

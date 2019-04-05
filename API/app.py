@@ -1,21 +1,24 @@
-import json,falcon,requests
+import json, falcon
 from waitress import serve
 import requests
 import textParser
 from LIWC import LIWC_similarity
 from IBMWatson import watson_similarity
 from IBMWatson import IBMWatsonMain
-from bs4 import BeautifulSoup
+from All_Algo import weighted_similarity
 import urllib.request
 import sys
+import html2text
 from bs4 import BeautifulSoup
+
+# played_song_dict = {}
 class ObjRequestClass:
     def on_post(self,req,resp):
         body = req.stream.read()
         str = body.decode("utf-8")
         tabArray = str.split('\"')
         songJson = getSongSelected(tabArray)
-        id=getID(songJson['Song'],songJson['artist'])
+        id=getID(songJson['Song'], songJson['artist'])
         content={
           'SongName' : songJson['Song'],
           'url' : id
@@ -23,6 +26,8 @@ class ObjRequestClass:
         resp.body=json.dumps(content);
 api=falcon.API()
 api.add_route('/test',ObjRequestClass())
+
+
 def getID(Song,artist):
     resp = requests.get("https://www.youtube.com/results?search_query=" + Song + "+" + artist)
     soup = BeautifulSoup(resp.text,features="lxml")
@@ -34,7 +39,7 @@ def getID(Song,artist):
     return firstTag
 
 
-def getSongSelected(tabArray):
+def getSongSelected(tabArray, played_songs_dict):
     returnTo={}
     textFinall=''
     for tab in tabArray:
@@ -56,17 +61,26 @@ def getSongSelected(tabArray):
             text=" ".join(splitted[50:440])
             textFinall = text
             print(text)
-        except Exception:
+        except Exception as e:
+            if len(tab)>1:
+                print (e)
             pass
     text_liwc_lic = textParser.activate_LIWC_algo(textFinall)
-    dic=IBMWatsonMain.getIBMVectorFromText(textFinall)
+    dic = IBMWatsonMain.getIBMVectorFromText(textFinall)
     print(dic)
-    song_name1, artist1=watson_similarity.get_most_similar_song(IBMWatsonMain.getIBMVectorFromText(textFinall))
+    song_name1, artist1 = watson_similarity.get_most_similar_song(IBMWatsonMain.getIBMVectorFromText(textFinall))
     song_name, artist = LIWC_similarity.get_most_similar_song(text_liwc_lic)
     returnTo['Song'] = song_name1
     returnTo['artist'] = artist1
     print(song_name,artist)
    # print(song_name1, artist1)
     return returnTo
+
+    # text_liwc_lic = textParser.activate_LIWC_algo(textFinall)
+    # ibm_dict = IBMWatsonMain.getIBMVectorFromText(textFinall)
+    # song_name, artist = weighted_similarity.get_most_similar_song(text_liwc_lic, ibm_dict)
+    # print('song: {0}, artist: {1}'.format(song_name, artist))
+    # return {'Song': song_name, 'artist':artist}
+
 
 serve(api, host='127.0.0.1', port=5555)
