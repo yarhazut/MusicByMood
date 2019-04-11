@@ -14,8 +14,8 @@ def dict_to_arr(dict):
     song_vec[4] = dict['anger']
     return song_vec
 
-
-def get_most_similar_song(text_categories_arr, played_songs_dict):
+#TO-DO: ADD played_songs_dict TO params
+def get_most_similar_song(text_categories_arr):
     text_categories_arr = dict_to_arr(text_categories_arr)
     max_rate = 0
     max_song = ''
@@ -29,9 +29,9 @@ def get_most_similar_song(text_categories_arr, played_songs_dict):
             json_obj = json.loads(json_obj)
             song_name = json_obj['songName']
             song_artist = json_obj['artist']
-            # played_songs_dict form is: <song name,set(artists who played that sing)>
-            if song_name in played_songs_dict and song_artist in played_songs_dict[song_name]:
-                continue
+            # TO-DO: played_songs_dict form is: <song name,set(artists who played that sing)>
+            # if song_name in played_songs_dict and song_artist in played_songs_dict[song_name]:
+            #     continue
             song_categories_arr = dict_to_arr(json_obj)
             rate = get_ibm_watson_rate(song_categories_arr, text_categories_arr)
             if rate > max_rate:

@@ -1,19 +1,26 @@
 from pathlib import Path
 import json
+from googleEmbeddings.embedding_similarity import get_google_embedding_rate
 from LIWC.LIWC_similarity import create_idx_dic_for_cosin, get_liwc_rate
 from IBMWatson.watson_similarity import get_ibm_watson_rate, dict_to_arr
+from googleEmbeddings.embedding_similarity import get_google_embedding_rate
+from googleEmbeddings.createGoogleEmbeddingsPosting import create_Google_Embeddings_AVG_Vector_For_A_Given_Text
+
+
 import textParser
 from IBMWatson import IBMWatsonMain
 
 
 # TO DO: add songs that were already played
-def get_most_similar_song(txt_after_liwc_dict, txt_after_watson_dict):
-    data_folder = Path("C:\songs_after_post_IBM_LIWC")
-    data_file = 'all_songs.txt'
-    file_to_open = data_folder / data_file
+def get_most_similar_song(txt_after_liwc_dict, txt_after_watson_dict, txt_embd_vec):
+    # data_folder = Path("C:\songs_after_post_LIWC_IBM_EMBD")
+    # data_file = 'all_songs_final.txt'
+    # file_to_open = data_folder / data_file
+    file_to_open = '../all_songs_final.txt'
 
     idx_dic = create_idx_dic_for_cosin()
-    text_categories_ibm_arr  = dict_to_arr(txt_after_watson_dict)
+    text_categories_ibm_arr = dict_to_arr(txt_after_watson_dict)
+
 
     max_rate = 0
     max_song = ''
@@ -27,15 +34,20 @@ def get_most_similar_song(txt_after_liwc_dict, txt_after_watson_dict):
         song_artist = song_obj['artist']
         liwc_dict = song_obj['liwc_dic']
         ibm_watson_dict = song_obj['watson_dic']
+        song_embedding_vec = song_obj['embd_vec']
 
         ibm_watson_categories_arr = dict_to_arr(ibm_watson_dict)
 
         # ---- get rate for song from each category ----
         watson_rate = get_ibm_watson_rate(ibm_watson_categories_arr, text_categories_ibm_arr)
         liwc_rate = get_liwc_rate(liwc_dict, txt_after_liwc_dict, idx_dic)
+        embd_rate = get_google_embedding_rate(txt_embd_vec, song_embedding_vec)
+
+        # if song_name == 'Hollywood Hoes':
+        #     print('watson_rate:{0} ,liwc_rate:{1}, embd_rate:{2}'.format(watson_rate, liwc_rate, embd_rate))
 
         # ---- get weighted rate ----
-        weighted_rate = 0.5*watson_rate + 0.5*liwc_rate
+        weighted_rate = 0*watson_rate + 0*liwc_rate+1*embd_rate
 
         # ---- get max_rate ----
         if weighted_rate > max_rate:
@@ -43,6 +55,7 @@ def get_most_similar_song(txt_after_liwc_dict, txt_after_watson_dict):
             max_song = song_name
             max_artist = song_artist
 
+    print (max_rate)
     return max_song, max_artist
 
 

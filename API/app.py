@@ -2,9 +2,11 @@ import json, falcon
 from waitress import serve
 import requests
 import textParser
+from Translate.hebrewTranslator import translate_text
 from LIWC import LIWC_similarity
 from IBMWatson import watson_similarity
 from IBMWatson import IBMWatsonMain
+from googleEmbeddings.createGoogleEmbeddingsPosting import create_Google_Embeddings_AVG_Vector_For_A_Given_Text,create_google_embd_model
 from All_Algo import weighted_similarity
 import urllib.request
 import sys
@@ -25,7 +27,8 @@ class ObjRequestClass:
         }
         resp.body=json.dumps(content);
 api=falcon.API()
-api.add_route('/test',ObjRequestClass())
+api.add_route('/test', ObjRequestClass())
+google_embd_model = create_google_embd_model()
 
 
 def getID(Song,artist):
@@ -39,7 +42,7 @@ def getID(Song,artist):
     return firstTag
 
 
-def getSongSelected(tabArray, played_songs_dict):
+def getSongSelected(tabArray):
     returnTo={}
     textFinall=''
     for tab in tabArray:
@@ -59,28 +62,19 @@ def getSongSelected(tabArray, played_songs_dict):
             text = '\n'.join(chunk for chunk in chunks if chunk)
             splitted = text.split()
             text=" ".join(splitted[50:440])
-            textFinall = text
+            textFinall = translate_text(text)
             print(text)
         except Exception as e:
             if len(tab)>1:
                 print (e)
             pass
+    # create text vector/dict for each algorithem
     text_liwc_lic = textParser.activate_LIWC_algo(textFinall)
-    dic = IBMWatsonMain.getIBMVectorFromText(textFinall)
-    print(dic)
-    song_name1, artist1 = watson_similarity.get_most_similar_song(IBMWatsonMain.getIBMVectorFromText(textFinall))
-    song_name, artist = LIWC_similarity.get_most_similar_song(text_liwc_lic)
-    returnTo['Song'] = song_name1
-    returnTo['artist'] = artist1
-    print(song_name,artist)
-   # print(song_name1, artist1)
-    return returnTo
-
-    # text_liwc_lic = textParser.activate_LIWC_algo(textFinall)
-    # ibm_dict = IBMWatsonMain.getIBMVectorFromText(textFinall)
-    # song_name, artist = weighted_similarity.get_most_similar_song(text_liwc_lic, ibm_dict)
-    # print('song: {0}, artist: {1}'.format(song_name, artist))
-    # return {'Song': song_name, 'artist':artist}
+    ibm_dict = IBMWatsonMain.getIBMVectorFromText(textFinall)
+    txt_embd_vec = create_Google_Embeddings_AVG_Vector_For_A_Given_Text(textFinall,google_embd_model)
+    song_name, artist = weighted_similarity.get_most_similar_song(text_liwc_lic, ibm_dict, txt_embd_vec)
+    print('song: {0}, artist: {1}'.format(song_name, artist))
+    return {'Song': song_name, 'artist': artist}
 
 
 serve(api, host='127.0.0.1', port=5555)
