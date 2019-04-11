@@ -10,7 +10,6 @@ from googleEmbeddings.createGoogleEmbeddingsPosting import create_Google_Embeddi
 from All_Algo import weighted_similarity
 import urllib.request
 import sys
-import html2text
 from bs4 import BeautifulSoup
 
 # played_song_dict = {}
@@ -18,12 +17,13 @@ class ObjRequestClass:
     def on_post(self,req,resp):
         body = req.stream.read()
         str = body.decode("utf-8")
-        tabArray = str.split('\"')
+        newStr = json.loads(str);
+        tabArray = newStr['tabs'];
         songJson = getSongSelected(tabArray)
-        id=getID(songJson['Song'], songJson['artist'])
-        content={
-          'SongName' : songJson['Song'],
-          'url' : id
+        id = getID(songJson['Song'], songJson['artist'])
+        content = {
+            'SongName': songJson['Song'],
+            'url': id, 'SongArtist': songJson['artist']
         }
         resp.body=json.dumps(content);
 api=falcon.API()
