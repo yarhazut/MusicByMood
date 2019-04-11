@@ -11,6 +11,16 @@ def lastfm_tagsOfSongs_search(artist_name,track_name):
     url = api_url+'?method=track.gettoptags&artist=' +artist_name + '&track=' +track_name + '&api_key='+api_key +'&format=json'
     data = requests.get(url)
     return HttpResponse(data.content)
+def getArtistInfo(artist_name):
+    api_url = 'http://ws.audioscrobbler.com/2.0/'
+    api_key = 'f43f26a4bc4a14141fedd677d6c4d4df'
+    url = api_url+'?method=artist.getinfo&artist=' +artist_name +'&api_key='+api_key +'&format=json'
+    data = requests.get(url)
+    tags = HttpResponse(data.content)
+    my_json = tags.content
+    data = json.loads(my_json)
+    data = data['artist']['bio']['summary']
+    return data
 def get_tags_Array(tags):
     my_json = tags.content
     data = json.loads(my_json)
@@ -55,10 +65,11 @@ def getNamesOfArtistAndSong():
                 pass
     return data;
 #tags=lastfm_tagsOfSongs_search("A Bullet For Pretty Boy","Voices And Vessels")
-dat=getNamesOfArtistAndSong();
+#dat=getNamesOfArtistAndSong();
 #get_tags_Array(tags)
-print(len(dict_tag))
-exDict = {'dict_tag': dict_tag}
+#print(len(dict_tag))
+#exDict = {'dict_tag': dict_tag}
 
-with open('fileDictNew.txt', 'w') as file:
-     file.write(json.dumps(exDict))
+#with open('fileDictNew.txt', 'w') as file:
+     #file.write(json.dumps(exDict))
+getArtistInfo("Wiz Khalifa")

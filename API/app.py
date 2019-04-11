@@ -59,10 +59,15 @@ def getSongSelected(tabArray):
                 final_txt += ' ' + txt
             try:
                 textFinall = translate_text(final_txt)
-                # print(textFinall)
-            except:
-                textFinall = final_txt
-
+            except Exception as e:
+                splitted = final_txt.split()
+                size = len(splitted)
+                if size > 500:
+                    text = " ".join(splitted[0:500])
+                    try:
+                        textFinall = translate_text(text)
+                    except Exception as e:
+                        textFinall = final_txt
         except Exception as e:
             if len(tab_url)>1:
                 traceback.print_exc()

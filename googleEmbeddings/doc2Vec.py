@@ -50,7 +50,7 @@ def create_Doc2Vec_For_A_Given_Text(text):
     return song_doc2vec_array
 
 
-create_Doc2Vec_For_A_Given_Text("hello I am yarden and i wand to sleep until as much as possible")
+#create_Doc2Vec_For_A_Given_Text("hello I am yarden and i wand to sleep until as much as possible")
 
-create_Doc2Vec_For_All_Songs()
+#create_Doc2Vec_For_All_Songs()
 

@@ -7,7 +7,7 @@ from LIWC.LIWC_similarity import create_idx_dic_for_cosin, get_liwc_rate
 from IBMWatson.watson_similarity import get_ibm_watson_rate, dict_to_arr
 from googleEmbeddings.embedding_similarity import get_google_embedding_rate
 from googleEmbeddings.createGoogleEmbeddingsPosting import create_Google_Embeddings_AVG_Vector_For_A_Given_Text
-
+from LastFm.lastFmTags import lastfm_tagsOfSongs_search,get_tags_Array,getArtistInfo
 
 import textParser
 from IBMWatson import IBMWatsonMain
@@ -63,9 +63,23 @@ def get_most_similar_song(txt_after_liwc_dict, txt_after_watson_dict, txt_embd_v
 
         # ---- get max_rate ----
         if weighted_rate > max_rate:
-            max_rate = weighted_rate
-            max_song = song_name
-            max_artist = song_artist
+            try:
+             arr = getArtistInfo(song_artist)
+             if (len(arr)>0):
+                 if "rap" in arr:
+                     weighted_rate = weighted_rate -1
+                 if weighted_rate > max_rate:
+                     max_rate = weighted_rate
+                     max_song = song_name
+                     max_artist = song_artist
+             else:
+                 max_rate = weighted_rate
+                 max_song = song_name
+                 max_artist = song_artist
+            except:
+                max_rate = weighted_rate
+                max_song = song_name
+                max_artist = song_artist
 
     print (max_rate)
     return max_song, max_artist
