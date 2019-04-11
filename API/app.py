@@ -57,9 +57,12 @@ def getSongSelected(tabArray):
             for tag in result_set_list:
                 txt = tag.text
                 final_txt += ' ' + txt
+            try:
+                textFinall = translate_text(final_txt)
+                # print(textFinall)
+            except:
+                textFinall = final_txt
 
-            textFinall = translate_text(final_txt)
-            print(textFinall)
         except Exception as e:
             if len(tab_url)>1:
                 traceback.print_exc()
@@ -70,7 +73,7 @@ def getSongSelected(tabArray):
     ibm_dict = IBMWatsonMain.getIBMVectorFromText(textFinall)
     txt_embd_vec = create_Google_Embeddings_AVG_Vector_For_A_Given_Text(textFinall,google_embd_model)
     txt_doc2vec_vec = create_Doc2Vec_For_A_Given_Text(textFinall)
-    song_name, artist = weighted_similarity.get_most_similar_song(text_liwc_lic, ibm_dict, txt_embd_vec)
+    song_name, artist = weighted_similarity.get_most_similar_song(text_liwc_lic, ibm_dict, txt_embd_vec, txt_doc2vec_vec)
     print('song: {0}, artist: {1}'.format(song_name, artist))
     return {'Song': song_name, 'artist': artist}
 
